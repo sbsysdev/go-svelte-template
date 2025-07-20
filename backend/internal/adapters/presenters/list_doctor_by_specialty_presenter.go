@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sbsysdev/go-svelte-template/internal/application"
 	"github.com/sbsysdev/go-svelte-template/internal/domain"
 )
 
@@ -25,6 +26,6 @@ func (*listDoctorBySpecialtyPresenter) Error(ctx context.Context, err error) err
 	})
 }
 
-func NewListDoctorBySpecialtyPresenter() *listDoctorBySpecialtyPresenter {
+func NewListDoctorBySpecialtyPresenter() application.ListDoctorBySpecialtyPresenter {
 	return &listDoctorBySpecialtyPresenter{}
 }

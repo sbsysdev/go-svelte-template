@@ -2,7 +2,6 @@ package presenters
 
 import (
 	"context"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sbsysdev/go-svelte-template/internal/application"
@@ -16,11 +15,7 @@ func (*createPatientPresenter) Present(ctx context.Context, patient *domain.Pati
 	return fiberCtx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Patient created successfully",
 		"data": fiber.Map{
-			"patient": fiber.Map{
-				"id":    patient.ID,
-				"name":  patient.Name,
-				"birth": patient.Birth.Format(time.DateOnly),
-			},
+			"patient": patient,
 		},
 	})
 }
