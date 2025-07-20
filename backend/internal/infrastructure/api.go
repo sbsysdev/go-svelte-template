@@ -50,6 +50,12 @@ func (api *Api) StartApiServer() error {
 	createDoctorController := controllers.NewCreateDoctorController(createDoctorUseCase)
 	v1Group.Post("/doctors", createDoctorController.Handle)
 
+	// List Doctors by Specialty
+	listDoctorBySpecialtyPresenter := presenters.NewListDoctorBySpecialtyPresenter()
+	listDoctorBySpecialtyUseCase := application.NewListDoctorBySpecialtyUseCase(doctorRepository, listDoctorBySpecialtyPresenter)
+	listDoctorBySpecialtyController := controllers.NewListDoctorBySpecialtyController(listDoctorBySpecialtyUseCase)
+	v1Group.Get("/specialties/:specialtyID/doctors", listDoctorBySpecialtyController.Handle)
+
 	// Start the server
 	return api.app.Listen(fmt.Sprintf(":%s", api.env.APP_PORT))
 }

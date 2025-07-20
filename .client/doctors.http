@@ -25,5 +25,10 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:8080/api/v1/doctors?specialty_id=5c0c153a-6793-4d00-bb63-2f8d2e418718 HTTP/1.1
+GET http://localhost:8080/api/v1/specialties/5c0c153a-6793-4d00-bb63-2f8d2e418718/doctors HTTP/1.1
+content-type: application/json
+
+
+###
+GET http://localhost:8080/api/v1/specialties/59738048-889f-48b0-90af-e9ce2cde3a18/doctors HTTP/1.1
 content-type: application/json

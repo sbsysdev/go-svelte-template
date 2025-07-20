@@ -7,25 +7,24 @@ import (
 	"github.com/sbsysdev/go-svelte-template/internal/domain"
 )
 
-type listSpecialtyPresenter struct{}
+type listDoctorBySpecialtyPresenter struct{}
 
-func (*listSpecialtyPresenter) Present(ctx context.Context, specialties []*domain.Specialty) error {
+func (*listDoctorBySpecialtyPresenter) Present(ctx context.Context, doctors []*domain.Doctor) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Specialties retrieved successfully",
+		"message": "Doctors retrieved successfully",
 		"data": fiber.Map{
-			"specialties": specialties,
+			"doctors": doctors,
 		},
 	})
 }
-
-func (*listSpecialtyPresenter) Error(ctx context.Context, err error) error {
+func (*listDoctorBySpecialtyPresenter) Error(ctx context.Context, err error) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"error": err.Error(),
 	})
 }
 
-func NewListSpecialtyPresenter() *listSpecialtyPresenter {
-	return &listSpecialtyPresenter{}
+func NewListDoctorBySpecialtyPresenter() *listDoctorBySpecialtyPresenter {
+	return &listDoctorBySpecialtyPresenter{}
 }

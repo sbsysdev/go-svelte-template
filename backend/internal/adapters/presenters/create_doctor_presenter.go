@@ -10,7 +10,7 @@ import (
 
 type createDoctorPresenter struct{}
 
-func (presenter *createDoctorPresenter) Present(ctx context.Context, doctor *domain.Doctor) error {
+func (*createDoctorPresenter) Present(ctx context.Context, doctor *domain.Doctor) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Doctor created successfully",
@@ -24,7 +24,7 @@ func (presenter *createDoctorPresenter) Present(ctx context.Context, doctor *dom
 	})
 }
 
-func (presenter *createDoctorPresenter) Error(ctx context.Context, err error) error {
+func (*createDoctorPresenter) Error(ctx context.Context, err error) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"error": err.Error(),
