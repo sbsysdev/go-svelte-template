@@ -1,14 +1,18 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type Doctor struct {
 	ID          uuid.UUID
 	Name        string
-	Specialties []*Speciality
+	Specialties []*Specialty
 }
 
-func NewDoctor(name string, specialties []*Speciality) *Doctor {
+func NewDoctor(name string, specialties []*Specialty) *Doctor {
 	return &Doctor{
 		ID:          uuid.New(),
 		Name:        name,
@@ -17,7 +21,7 @@ func NewDoctor(name string, specialties []*Speciality) *Doctor {
 }
 
 type DoctorRepository interface {
-	Save(doctor *Doctor) error
-	FindByID(id uuid.UUID) (*Doctor, error)
-	FindBySpecialty(specialtyID uuid.UUID) ([]*Doctor, error)
+	Save(context.Context, *Doctor) error
+	FindByID(context.Context, uuid.UUID) (*Doctor, error)
+	FindBySpecialtyID(context.Context, uuid.UUID) ([]*Doctor, error)
 }

@@ -18,12 +18,12 @@ type Appointment struct {
 	ID        uuid.UUID
 	Patient   *Patient
 	Doctor    *Doctor
-	Specialty *Speciality
+	Specialty *Specialty
 	Date      time.Time
 	State     AppointmentState
 }
 
-func NewAppointment(patient *Patient, doctor *Doctor, specialty *Speciality, date time.Time) *Appointment {
+func NewAppointment(patient *Patient, doctor *Doctor, specialty *Specialty, date time.Time) *Appointment {
 	return &Appointment{
 		ID:        uuid.New(),
 		Patient:   patient,

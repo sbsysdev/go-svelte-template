@@ -26,19 +26,29 @@ type Api struct {
 func (api *Api) StartApiServer() error {
 	v1Group := api.app.Group("/api/v1")
 
-	// Speciality Repository
-	specialityRepository := gateways.NewSpecialityRepository(api.dbpool)
+	// Specialty Repository
+	specialtyRepository := gateways.NewSpecialtyRepository(api.dbpool)
 
-	// List Specialities
-	listSpecialityPresenter := presenters.NewListSpecialityPresenter()
-	listSpecialityUseCase := application.NewListSpecialityUseCase(specialityRepository, listSpecialityPresenter)
-	listSpecialityController := controllers.NewListSpecialityController(listSpecialityUseCase)
-	v1Group.Get("/specialities", listSpecialityController.Handle)
+	// Create Specialty
+	createSpecialtyPresenter := presenters.NewCreateSpecialtyPresenter()
+	createSpecialtyUseCase := application.NewCreateSpecialtyUseCase(specialtyRepository, createSpecialtyPresenter)
+	createSpecialtyController := controllers.NewCreateSpecialtyController(createSpecialtyUseCase)
+	v1Group.Post("/specialties", createSpecialtyController.Handle)
 
-	createSpecialityPresenter := presenters.NewCreateSpecialityPresenter()
-	createSpecialityUseCase := application.NewCreateSpecialityUseCase(specialityRepository, createSpecialityPresenter)
-	createSpecialityController := controllers.NewCreateSpecialityController(createSpecialityUseCase)
-	v1Group.Post("/specialities", createSpecialityController.Handle)
+	// List Specialties
+	listSpecialtyPresenter := presenters.NewListSpecialtyPresenter()
+	listSpecialtyUseCase := application.NewListSpecialtyUseCase(specialtyRepository, listSpecialtyPresenter)
+	listSpecialtyController := controllers.NewListSpecialtyController(listSpecialtyUseCase)
+	v1Group.Get("/specialties", listSpecialtyController.Handle)
+
+	// Doctor Repository
+	doctorRepository := gateways.NewDoctorRepository(api.dbpool, specialtyRepository)
+
+	// Create Doctor
+	createDoctorPresenter := presenters.NewCreateDoctorPresenter()
+	createDoctorUseCase := application.NewCreateDoctorUseCase(doctorRepository, createDoctorPresenter, specialtyRepository)
+	createDoctorController := controllers.NewCreateDoctorController(createDoctorUseCase)
+	v1Group.Post("/doctors", createDoctorController.Handle)
 
 	// Start the server
 	return api.app.Listen(fmt.Sprintf(":%s", api.env.APP_PORT))
