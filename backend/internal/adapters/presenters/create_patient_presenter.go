@@ -2,34 +2,35 @@ package presenters
 
 import (
 	"context"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sbsysdev/go-svelte-template/internal/application"
 	"github.com/sbsysdev/go-svelte-template/internal/domain"
 )
 
-type createDoctorPresenter struct{}
+type createPatientPresenter struct{}
 
-func (*createDoctorPresenter) Present(ctx context.Context, doctor *domain.Doctor) error {
+func (*createPatientPresenter) Present(ctx context.Context, patient *domain.Patient) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Doctor created successfully",
+		"message": "Patient created successfully",
 		"data": fiber.Map{
-			"doctor": fiber.Map{
-				"id":          doctor.ID,
-				"name":        doctor.Name,
-				"specialties": doctor.Specialties,
+			"patient": fiber.Map{
+				"id":    patient.ID,
+				"name":  patient.Name,
+				"birth": patient.Birth.Format(time.DateOnly),
 			},
 		},
 	})
 }
-func (*createDoctorPresenter) Error(ctx context.Context, err error) error {
+func (*createPatientPresenter) Error(ctx context.Context, err error) error {
 	fiberCtx := ctx.Value("fiberContext").(*fiber.Ctx)
 	return fiberCtx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"error": err.Error(),
 	})
 }
 
-func NewCreateDoctorPresenter() application.CreateDoctorPresenter {
-	return &createDoctorPresenter{}
+func NewCreatePatientPresenter() application.CreatePatientPresenter {
+	return &createPatientPresenter{}
 }

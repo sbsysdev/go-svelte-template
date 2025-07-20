@@ -33,3 +33,14 @@ FROM doctors d
 JOIN doctor_specialties ds ON d.doctor_id = ds.doctor_id
 WHERE ds.specialty_id = $1
 `
+
+// PatientRepository
+const createPatientSQL = `
+INSERT INTO patients (patient_id, patient_name, patient_birth) VALUES ($1, $2, $3)
+`
+const findAllPatientsSQL = `
+SELECT patient_id, patient_name, patient_birth FROM patients
+`
+const findPatientByIDSQL = `
+SELECT patient_id, patient_name, patient_birth FROM patients WHERE id = $1
+`

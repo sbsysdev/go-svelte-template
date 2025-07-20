@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,8 +22,7 @@ func NewPatient(name string, birth time.Time) *Patient {
 }
 
 type PatientRepository interface {
-	Save(patient *Patient) error
-	FindByID(id uuid.UUID) (*Patient, error)
-	FindByName(name string) ([]*Patient, error)
-	FindAll() ([]*Patient, error)
+	Save(context.Context, *Patient) error
+	FindAll(context.Context) ([]*Patient, error)
+	FindByID(context.Context, uuid.UUID) (*Patient, error)
 }

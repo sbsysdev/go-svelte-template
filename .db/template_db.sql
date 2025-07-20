@@ -39,3 +39,10 @@ WHERE
 GROUP BY
     d.doctor_id,
     d.doctor_name;
+
+CREATE TABLE
+    IF NOT EXISTS patients (
+        patient_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        patient_name TEXT NOT NULL,
+        patient_birth DATE NOT NULL
+    );
