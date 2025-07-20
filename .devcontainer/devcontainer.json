@@ -19,7 +19,8 @@
         "dbaeumer.vscode-eslint",
         "svelte.svelte-vscode",
         "golang.Go",
-        "humao.rest-client"
+        "humao.rest-client",
+        "inferrinizzard.prettier-sql-vscode"
       ]
     }
   },

@@ -15,7 +15,6 @@ func NewStorage(ctx context.Context, env *Environment) *pgxpool.Pool {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
-	defer dbpool.Close()
 
 	return dbpool
 }
