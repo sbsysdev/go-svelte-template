@@ -18,11 +18,13 @@
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "svelte.svelte-vscode",
-        "golang.Go"
+        "golang.Go",
+        "humao.rest-client"
       ]
     }
   },
   "mounts": [
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,readonly,type=bind"
-  ]
+  ],
+  "postCreateCommand": "sudo chown -R $(whoami) $(go env GOPATH)"
 }

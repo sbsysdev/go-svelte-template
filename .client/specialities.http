@@ -1,0 +1,21 @@
+###
+POST http://localhost:8080/api/v1/specialities HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Cardiology",
+  "duration": 60
+}
+
+###
+POST http://localhost:8080/api/v1/specialities HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Urology",
+  "duration": 30
+}
+
+###
+GET http://localhost:8080/api/v1/specialities HTTP/1.1
+content-type: application/json
