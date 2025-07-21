@@ -89,7 +89,13 @@ func (guard *AppointmentGuard) checkAvailabilityByAppointments(appointments []*A
 		requestedStartDate := appointment.Date
 		requestedEndDate := requestedStartDate.Add(time.Duration(appointment.Specialty.Duration) * time.Minute)
 
-		if requestedStartDate.Compare(existingStartDate) >= 0 && requestedStartDate.Before(existingEndDate) {
+		if requestedStartDate.Equal(existingStartDate) || requestedEndDate.Equal(existingEndDate) {
+			return errors.New(errAppointmentDateOverlap)
+		}
+		if requestedStartDate.Before(existingStartDate) && requestedEndDate.After(existingEndDate) {
+			return errors.New(errAppointmentDateOverlap)
+		}
+		if requestedStartDate.After(existingStartDate) && requestedStartDate.Before(existingEndDate) {
 			return errors.New(errAppointmentDateOverlap)
 		}
 		if requestedEndDate.After(existingStartDate) && requestedEndDate.Before(existingEndDate) {
