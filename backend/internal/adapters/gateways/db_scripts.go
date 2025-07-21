@@ -42,5 +42,23 @@ const findAllPatientsSQL = `
 SELECT patient_id, patient_name, patient_birth FROM patients
 `
 const findPatientByIDSQL = `
-SELECT patient_id, patient_name, patient_birth FROM patients WHERE id = $1
+SELECT patient_id, patient_name, patient_birth FROM patients WHERE patient_id = $1
+`
+
+// AppointmentRepository
+const createAppointmentSQL = `
+INSERT INTO appointments (appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state)
+VALUES ($1, $2, $3, $4, $5, $6)
+`
+const findAppointmentByIDSQL = `
+SELECT appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state
+FROM appointments WHERE appointment_id = $1
+`
+const findAppointmentsByDoctorSQL = `
+SELECT appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state
+FROM appointments WHERE doctor_id = $1 AND appointment_date >= $2 AND appointment_date < $3
+`
+const findAppointmentsByPatientSQL = `
+SELECT appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state
+FROM appointments WHERE patient_id = $1 AND appointment_date >= $2 AND appointment_date < $3
 `

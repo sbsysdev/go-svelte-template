@@ -15,11 +15,7 @@ func (*createSpecialtyPresenter) Present(ctx context.Context, specialty *domain.
 	return fiberCtx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "Specialty created successfully",
 		"data": fiber.Map{
-			"specialty": fiber.Map{
-				"id":       specialty.ID,
-				"name":     specialty.Name,
-				"duration": specialty.Duration,
-			},
+			"specialty": specialty,
 		},
 	})
 }

@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,6 +15,8 @@ const (
 	AppointmentStateCompleted AppointmentState = "completed"
 	AppointmentStateCancelled AppointmentState = "cancelled"
 )
+
+const errAppointmentDateOverlap = "appointment date overlaps with an existing appointment"
 
 type Appointment struct {
 	ID        uuid.UUID
@@ -35,10 +39,10 @@ func NewAppointment(patient *Patient, doctor *Doctor, specialty *Specialty, date
 }
 
 type AppointmentRepository interface {
-	Save(appointment *Appointment) error
-	FindByID(id uuid.UUID) (*Appointment, error)
-	FindByDoctor(doctorID uuid.UUID, startDate time.Time, endDate time.Time) ([]*Appointment, error)
-	FindByPatient(patientID uuid.UUID, startDate time.Time, endDate time.Time) ([]*Appointment, error)
+	Save(context.Context, *Appointment) error
+	FindByID(context.Context, uuid.UUID) (*Appointment, error)
+	FindByDoctor(context.Context, uuid.UUID, time.Time, time.Time) ([]*Appointment, error)
+	FindByPatient(context.Context, uuid.UUID, time.Time, time.Time) ([]*Appointment, error)
 }
 
 type AppointmentGuard struct {
@@ -51,30 +55,29 @@ func NewAppointmentGuard(appointmentRepository AppointmentRepository) *Appointme
 	}
 }
 
-func (guard *AppointmentGuard) CheckAvailabilityByDate(appointment *Appointment, startDate time.Time, endDate time.Time) bool {
+func (guard *AppointmentGuard) CheckAvailabilityByDate(ctx context.Context, appointment *Appointment, startDate time.Time, endDate time.Time) error {
 	// Check if the doctor is available at the requested time
-	doctorAppointments, err := guard.appointmentRepository.FindByDoctor(appointment.Doctor.ID, startDate, endDate)
-	if err != nil {
-		return false
+	doctorAppointments, doctorErr := guard.appointmentRepository.FindByDoctor(ctx, appointment.Doctor.ID, startDate, endDate)
+	if doctorErr != nil {
+		return doctorErr
 	}
-	if !guard.checkAvailabilityByAppointments(doctorAppointments, appointment) {
-		return false
+	if err := guard.checkAvailabilityByAppointments(doctorAppointments, appointment); err != nil {
+		return err
 	}
 
 	// Check if the patient has any conflicting appointments
-	patientAppointments, err := guard.appointmentRepository.FindByPatient(appointment.Patient.ID, startDate, endDate)
-	if err != nil {
-		return false
+	patientAppointments, patientErr := guard.appointmentRepository.FindByPatient(ctx, appointment.Patient.ID, startDate, endDate)
+	if patientErr != nil {
+		return patientErr
 	}
-	if !guard.checkAvailabilityByAppointments(patientAppointments, appointment) {
-		return false
+	if err := guard.checkAvailabilityByAppointments(patientAppointments, appointment); err != nil {
+		return err
 	}
 
-	// If both checks pass, the appointment can be scheduled
-	return true
+	// If no conflicts found, the appointment can be scheduled
+	return nil
 }
-
-func (guard *AppointmentGuard) checkAvailabilityByAppointments(appointments []*Appointment, appointment *Appointment) bool {
+func (guard *AppointmentGuard) checkAvailabilityByAppointments(appointments []*Appointment, appointment *Appointment) error {
 	for _, existingAppointment := range appointments {
 		if existingAppointment.State != AppointmentStateScheduled {
 			continue
@@ -86,13 +89,13 @@ func (guard *AppointmentGuard) checkAvailabilityByAppointments(appointments []*A
 		requestedStartDate := appointment.Date
 		requestedEndDate := requestedStartDate.Add(time.Duration(appointment.Specialty.Duration) * time.Minute)
 
-		if requestedStartDate.After(existingStartDate) && requestedStartDate.Before(existingEndDate) {
-			return false // Requested time overlaps with an existing appointment
+		if requestedStartDate.Compare(existingStartDate) >= 0 && requestedStartDate.Before(existingEndDate) {
+			return errors.New(errAppointmentDateOverlap)
 		}
 		if requestedEndDate.After(existingStartDate) && requestedEndDate.Before(existingEndDate) {
-			return false // Requested time overlaps with an existing appointment
+			return errors.New(errAppointmentDateOverlap)
 		}
 	}
 
-	return true // No conflicts found
+	return nil // No conflicts found
 }

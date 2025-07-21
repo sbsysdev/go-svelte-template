@@ -46,3 +46,25 @@ CREATE TABLE
         patient_name TEXT NOT NULL,
         patient_birth DATE NOT NULL
     );
+
+DO $$
+BEGIN
+IF NOT EXISTS (
+    SELECT
+    FROM
+        pg_type
+    WHERE
+        typname LIKE 'appointment_state'
+) THEN CREATE TYPE appointment_state AS ENUM ('scheduled', 'completed', 'cancelled');
+END IF;
+END $$;
+
+CREATE TABLE
+    IF NOT EXISTS appointments (
+        appointment_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        patient_id UUID REFERENCES patients (patient_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        doctor_id UUID REFERENCES doctors (doctor_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        specialty_id UUID REFERENCES specialties (specialty_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        appointment_date TIMESTAMPTZ NOT NULL CHECK (appointment_date > NOW ()),
+        appointment_state appointment_state NOT NULL DEFAULT 'scheduled'
+    );

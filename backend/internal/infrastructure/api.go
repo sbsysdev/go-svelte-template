@@ -15,6 +15,7 @@ import (
 	"github.com/sbsysdev/go-svelte-template/internal/adapters/gateways"
 	"github.com/sbsysdev/go-svelte-template/internal/adapters/presenters"
 	"github.com/sbsysdev/go-svelte-template/internal/application"
+	"github.com/sbsysdev/go-svelte-template/internal/domain"
 )
 
 type Api struct {
@@ -70,6 +71,23 @@ func (api *Api) StartApiServer() error {
 	listPatientUseCase := application.NewListPatientUseCase(patientRepository, listPatientPresenter)
 	listPatientController := controllers.NewListPatientController(listPatientUseCase)
 	v1Group.Get("/patients", listPatientController.Handle)
+
+	// Appointment Repository
+	appointmentRepository := gateways.NewAppointmentRepository(api.dbpool, specialtyRepository, doctorRepository, patientRepository)
+	appointmentGuard := domain.NewAppointmentGuard(appointmentRepository)
+
+	// Create Appointment
+	createAppointmentPresenter := presenters.NewCreateAppointmentPresenter()
+	createAppointmentUseCase := application.NewCreateAppointmentUseCase(
+		patientRepository,
+		doctorRepository,
+		specialtyRepository,
+		appointmentRepository,
+		createAppointmentPresenter,
+		appointmentGuard,
+	)
+	createAppointmentController := controllers.NewCreateAppointmentController(createAppointmentUseCase)
+	v1Group.Post("/appointments", createAppointmentController.Handle)
 
 	// Start the server
 	return api.app.Listen(fmt.Sprintf(":%s", api.env.APP_PORT))
