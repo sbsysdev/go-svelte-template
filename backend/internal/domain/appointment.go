@@ -40,6 +40,7 @@ func NewAppointment(patient *Patient, doctor *Doctor, specialty *Specialty, date
 
 type AppointmentRepository interface {
 	Save(context.Context, *Appointment) error
+	FindAll(context.Context) ([]*Appointment, error)
 	FindByID(context.Context, uuid.UUID) (*Appointment, error)
 	FindByDoctor(context.Context, uuid.UUID, time.Time, time.Time) ([]*Appointment, error)
 	FindByPatient(context.Context, uuid.UUID, time.Time, time.Time) ([]*Appointment, error)

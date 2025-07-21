@@ -30,6 +30,45 @@ func (repository *appointmentRepository) Save(ctx context.Context, appointment *
 
 	return tx.Commit(ctx)
 }
+func (repository *appointmentRepository) FindAll(ctx context.Context) ([]*domain.Appointment, error) {
+	rows, err := repository.pool.Query(ctx, findAllAppointmentsSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var appointments []*domain.Appointment
+	for rows.Next() {
+		var appointment domain.Appointment
+		appointment.Patient = &domain.Patient{}
+		appointment.Doctor = &domain.Doctor{}
+		appointment.Specialty = &domain.Specialty{}
+		if err := rows.Scan(&appointment.ID, &appointment.Patient.ID, &appointment.Doctor.ID, &appointment.Specialty.ID, &appointment.Date, &appointment.State); err != nil {
+			return nil, err
+		}
+		patient, err := repository.patientRepository.FindByID(ctx, appointment.Patient.ID)
+		if err != nil {
+			return nil, err
+		}
+		appointment.Patient = patient
+
+		doctor, err := repository.doctorRepository.FindByID(ctx, appointment.Doctor.ID)
+		if err != nil {
+			return nil, err
+		}
+		appointment.Doctor = doctor
+
+		specialty, err := repository.specialtyRepository.FindByID(ctx, appointment.Specialty.ID)
+		if err != nil {
+			return nil, err
+		}
+		appointment.Specialty = specialty
+
+		appointments = append(appointments, &appointment)
+	}
+
+	return appointments, nil
+}
 func (repository *appointmentRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.Appointment, error) {
 	row := repository.pool.QueryRow(ctx, findAppointmentByIDSQL, id)
 

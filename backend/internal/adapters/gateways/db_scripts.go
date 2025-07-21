@@ -50,6 +50,10 @@ const createAppointmentSQL = `
 INSERT INTO appointments (appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state)
 VALUES ($1, $2, $3, $4, $5, $6)
 `
+const findAllAppointmentsSQL = `
+SELECT appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state FROM appointments
+WHERE appointment_state = 'scheduled'
+`
 const findAppointmentByIDSQL = `
 SELECT appointment_id, patient_id, doctor_id, specialty_id, appointment_date, appointment_state
 FROM appointments WHERE appointment_id = $1

@@ -89,6 +89,12 @@ func (api *Api) StartApiServer() error {
 	createAppointmentController := controllers.NewCreateAppointmentController(createAppointmentUseCase)
 	v1Group.Post("/appointments", createAppointmentController.Handle)
 
+	// List Appointments
+	listAppointmentPresenter := presenters.NewListAppointmentPresenter()
+	listAppointmentUseCase := application.NewListAppointmentUseCase(appointmentRepository, listAppointmentPresenter)
+	listAppointmentController := controllers.NewListAppointmentController(listAppointmentUseCase)
+	v1Group.Get("/appointments", listAppointmentController.Handle)
+
 	// Start the server
 	return api.app.Listen(fmt.Sprintf(":%s", api.env.APP_PORT))
 }

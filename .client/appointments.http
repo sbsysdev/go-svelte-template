@@ -18,3 +18,7 @@ content-type: application/json
   "specialty_id": "5c0c153a-6793-4d00-bb63-2f8d2e418718",
   "date": "2025-07-21T09:00:00Z"
 }
+
+###
+GET http://localhost:8080/api/v1/appointments HTTP/1.1
+content-type: application/json
